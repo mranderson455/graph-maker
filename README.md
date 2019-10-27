@@ -5,9 +5,11 @@
 * Change the length or width
 * Change the x-axis to have default values (1, 2, 3, etc.) or put in your own (2001, 2002, 2010, etc.)
 * Automatic scaling
+* Saving of images (currently postscript)
 
 ### How it works:
 * All the drawing functionality is based in turtle
+* TKinter to save images
 
 ### To do:
 * Make negatives work with the y-values
