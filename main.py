@@ -1,6 +1,4 @@
 import turtle
-import PIL
-import tkinter
 import os
 import random as r
 from time import gmtime, strftime
@@ -10,8 +8,8 @@ t = turtle.Turtle()
 t.speed(0)
 t.pensize(1)
 t.ht()
-dataSet = [1, 20, 45, 41, 123, 23, 70, 899, 40, 67]
-xVals = [2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009, 2010]
+dataSet = [30, 5, 0, 5, 10]
+xVals = [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]
 graphOrigin = [0, 0]
 xTextPadding = -3
 yTextPadding = -15
@@ -31,6 +29,20 @@ def findLargestInt(vals):
   return maxVal
 
 
+# Finds largest integer in an array.
+def findSmallestInt(vals):
+  # Start with max value being first value.
+  minVal = vals[0]
+
+
+  # If next value is bigger, make that the max, until array is done, then return.
+  for i in range(1, len(vals)):
+    if vals[i] < minVal:
+      minVal = vals[i]
+  
+  return minVal
+
+
 class Graph:
   # Constructor
   def __init__(self, title="My Graph"):
@@ -46,6 +58,8 @@ class Graph:
     print("Generating...")
     # Value intializing.
     maxVal = findLargestInt(vals)
+    minVal = findSmallestInt(vals)
+    print(minVal)
     graphOrigin = [-xSize / 2, -ySize / 2]
     pointPositions = []
 
@@ -99,7 +113,6 @@ class Graph:
     # We do this because we have already printed zero.
     print("Drawing x-axis... ", end = '')
     try:
-      t.pensize(0.1)
       for i in range(len(vals)):
         # Custom x values
         if customX is None:
@@ -123,7 +136,6 @@ class Graph:
     # Go back to origin and face up.
     t.goto(graphOrigin)
     t.down()
-    t.pensize(1)
     t.lt(90)
 
 
@@ -142,10 +154,16 @@ class Graph:
     # The actual value to write will be 1/8, then 2/8, and so on... of the highest value.
     print("Drawing y-axis... ", end = '')
     try:
-      t.pensize(0.1)
-      t.write(0, align="right")
+      if minVal >= 0:
+        t.write(0, align="right")
+      else:
+        t.write(minVal, align="right")
       for i in range(yIterations):
         t.fd(ySize / float(yIterations))
+        if minVal >= 0:
+          t.write(round(maxVal / float(yIterations) * (i + 1), 2), align="right")
+        else:
+          t.write(round((abs(maxVal) + abs(minVal)) / float(yIterations) * (i + 1) + minVal, 2), align="right")
         # Horizontal grid
         if (i != yIterations - 1):
           t.setx(t.pos()[0] - xTextPadding)
@@ -153,7 +171,6 @@ class Graph:
           t.setx(xSize + graphOrigin[0])
           t.up()
           t.setx(xNumPos)
-        t.write(round(maxVal / float(yIterations) * (i + 1), 2), align="right")
     except:
       print("Error")
     else:
@@ -163,7 +180,6 @@ class Graph:
     # Go back to origin.
     t.goto(graphOrigin)
     t.down()
-    t.pensize(1)
 
 
     # Change line color :)
@@ -171,9 +187,12 @@ class Graph:
 
 
     # Initialize graph values and put point at beginning value.
-    t.pensize(2)
+    t.pensize(1)
     t.up()
-    t.goto(graphOrigin[0], (vals[0] * (ySize / float(maxVal))) + graphOrigin[1])
+    if minVal >= 0:
+      t.goto(graphOrigin[0], (vals[0] * (ySize / float(maxVal))) + graphOrigin[1])
+    else:
+      t.goto(graphOrigin[0], (vals[0] * (ySize / (abs(minVal) + abs(maxVal)))))
     t.down()
 
 
@@ -185,7 +204,10 @@ class Graph:
     print("Graphing points... ", end='')
     try:
       for i in range(len(vals)):
-        t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / float(maxVal))) + graphOrigin[1])
+        if minVal >= 0:
+          t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / float(maxVal))) + graphOrigin[1])
+        else:
+          t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / (abs(minVal) + abs(maxVal)))) + (maxVal - minVal))
         t.dot(5, "black")
         # Return point's positions
         # pointPositions.append([t.pos()[0], t.pos()[1]])
@@ -234,9 +256,9 @@ class Graph:
 
 
 # Initialize.
-graph = Graph(title="Num. of Bricks Produced")
+graph = Graph("Num. of Thots Slain (yearly)")
 
-cv = graph.graphCreate(500, 500, dataSet, customX=xVals)
+cv = graph.graphCreate(100, 100, dataSet)
 
 kb = input("\nDo you want to save the file? (y/n): ")
 
