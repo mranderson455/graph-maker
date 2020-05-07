@@ -5,9 +5,11 @@
 * Change the length or width
 * Change the x-axis to have default values (1, 2, 3, etc.) or put in your own (2001, 2002, 2010, etc.)
 * Automatic scaling
+* Json file for easy changing of settings
 * Saving of images (currently postscript so you have to open in another program like GIMP)
 
 ### How it works:
+* Simply click run.bat to create your graph!
 * All the drawing functionality is based in turtle
 * TKinter to save images
 
@@ -17,7 +19,6 @@
 
 ### Tips:
 * Saved images are in the /imgs/ folder
-* All settings can be edited in settings.json
 * Best padding: x = -3, y = -15
 * Generally 500 by 500 is the biggest size you need
 * Set yIterations to 0 to automatically produce a visually appealing number of y-values
