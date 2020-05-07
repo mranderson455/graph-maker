@@ -2,20 +2,36 @@ import turtle
 import os
 import random as r
 from time import gmtime, strftime
+import json
 
+settings = {}
+
+with open("settings.json", "r") as f:
+  settings = json.load(f)
+
+print(settings)
 # Values initialization.
 t = turtle.Turtle()
 t.speed(0)
 t.pensize(1)
 t.ht()
-dataSet = [30, 5, 0, 5, 10]
-xVals = [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]
-graphOrigin = [0, 0]
-xTextPadding = -3
-yTextPadding = -15
+graphName = settings.get("graphName")
+dataSet = settings.get("dataSet")
+xVals = settings.get("xVals")
+graphOrigin = settings.get("graphOrigin")
+xTextPadding = settings.get("xTextPadding")
+yTextPadding = settings.get("yTextPadding")
+xSize = settings.get("xSize")
+ySize = settings.get("ySize")
+yIterations = settings.get("yIterations")
+startVal = settings.get("startVal")
+iterationMult = settings.get("iterationMult")
+lineColor = settings.get("lineColor")
 
+# Intial settings json file writing
+# settings = {"graphName": "My Graph", "dataSet": [1, 2, 3, 4, 5], "xSize": 500, "ySize": 500, "xVals": [2001, 2002, 2003, 2004, 2005], "graphOrigin": [0, 0], "xTextPadding": -3, "yTextPadding": -15}
 
-# Finds largest integer in an array.
+# Finds smallest integer in an array.
 def findLargestInt(vals):
   # Start with max value being first value.
   maxVal = vals[0]
@@ -59,7 +75,6 @@ class Graph:
     # Value intializing.
     maxVal = findLargestInt(vals)
     minVal = findSmallestInt(vals)
-    print(minVal)
     graphOrigin = [-xSize / 2, -ySize / 2]
     pointPositions = []
 
@@ -164,6 +179,7 @@ class Graph:
           t.write(round(maxVal / float(yIterations) * (i + 1), 2), align="right")
         else:
           t.write(round((abs(maxVal) + abs(minVal)) / float(yIterations) * (i + 1) + minVal, 2), align="right")
+          print(t.pos())
         # Horizontal grid
         if (i != yIterations - 1):
           t.setx(t.pos()[0] - xTextPadding)
@@ -183,7 +199,7 @@ class Graph:
 
 
     # Change line color :)
-    t.color(color)
+    t.color(lineColor)
 
 
     # Initialize graph values and put point at beginning value.
@@ -192,7 +208,7 @@ class Graph:
     if minVal >= 0:
       t.goto(graphOrigin[0], (vals[0] * (ySize / float(maxVal))) + graphOrigin[1])
     else:
-      t.goto(graphOrigin[0], (vals[0] * (ySize / (abs(minVal) + abs(maxVal)))))
+          t.goto(graphOrigin[0], (vals[0] * (ySize / float(abs(maxVal) + abs(minVal))) + graphOrigin[1] + (ySize / 2 + abs(maxVal))))
     t.down()
 
 
@@ -207,8 +223,9 @@ class Graph:
         if minVal >= 0:
           t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / float(maxVal))) + graphOrigin[1])
         else:
-          t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / (abs(minVal) + abs(maxVal)))) + (maxVal - minVal))
-        t.dot(5, "black")
+          t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / float(abs(maxVal) + abs(minVal))) + graphOrigin[1] + (ySize / 2 + abs(maxVal))))
+          # t.goto(graphOrigin[0] + (i * (float(xSize) / (len(vals) - 1))), (vals[i] * (ySize / (abs(minVal) + abs(maxVal)))) + graphOrigin[1] + (abs(maxVal) * abs(minVal)))
+        t.dot(5, lineColor)
         # Return point's positions
         # pointPositions.append([t.pos()[0], t.pos()[1]])
     except:
@@ -256,9 +273,13 @@ class Graph:
 
 
 # Initialize.
-graph = Graph("Num. of Thots Slain (yearly)")
+graph = Graph(graphName)
 
-cv = graph.graphCreate(100, 100, dataSet)
+# Intial settings json file writing
+# with open('settings.json', 'w') as f:
+#   json.dump(settings, f, indent=4)
+
+cv = graph.graphCreate(xSize, ySize, dataSet, color=lineColor, yIterations=yIterations, customX=xVals, startVal=startVal, iterationMult=iterationMult)
 
 kb = input("\nDo you want to save the file? (y/n): ")
 
